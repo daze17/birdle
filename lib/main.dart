@@ -17,11 +17,6 @@ class MainApp extends StatelessWidget {
           backgroundColor: Colors.blue.shade300,
         ),
         body: Center(child: GamePage()),
-        bottomNavigationBar: GuessInput(
-          onSubmitGuess: (String input) {
-            print(input);
-          },
-        ),
       ),
     );
   }
@@ -35,7 +30,9 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      curve: Curves.bounceIn,
       width: 60,
       height: 60,
       decoration: BoxDecoration(
@@ -57,9 +54,14 @@ class Tile extends StatelessWidget {
   }
 }
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   GamePage({super.key});
 
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
   final Game _game = Game();
 
   @override
@@ -76,6 +78,13 @@ class GamePage extends StatelessWidget {
                 for (var letter in guess) Tile(letter.char, letter.type),
               ],
             ),
+          GuessInput(
+            onSubmitGuess: (String guess) {
+              setState(() {
+                _game.guess(guess);
+              });
+            },
+          ),
         ],
       ),
     );
@@ -112,7 +121,7 @@ class GuessInput extends StatelessWidget {
                 ),
               ),
               controller: _textEditingController,
-              onSubmitted: (_) => _onSubmit(),
+              onSubmitted: (String value) => {_onSubmit()},
             ),
           ),
         ),
